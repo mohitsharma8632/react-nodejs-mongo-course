@@ -12,10 +12,10 @@ const User = require("../../models/User");
 router.get("/test", (req, res) => res.json({ msg: "User Works" }));
 
 // @route get api/users/reqister
-//@desc Register users
+//@desc Register
 //@access Public
 router.post("/register", (req, res) =>
-  User.findone({ email: req.body.email }).then(user => {
+  User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ email: "Email already exist" });
     } else {
@@ -24,20 +24,17 @@ router.post("/register", (req, res) =>
         r: "pg", //rating
         d: "mm" //default
       });
-      const nerUser = new User({
+      const newUser = new User({
         name: req.body.name,
         email: req.body.email,
         avatar,
-        password: req.body.passward
-
-
-        
+        password: req.body.password
       });
 
-      bcrypt.genSalt(10, (err, Salt) => {
+      bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
-          newUser.passward = hash;
+          newUser.password = hash;
           newUser
             .save()
             .then(user => res.json(user))
@@ -47,5 +44,30 @@ router.post("/register", (req, res) =>
     }
   })
 );
+
+// @route get api/users/login
+//@desc Login User / Returning jwtTocken
+//@access Public
+router.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  //Find user by email
+  User.findOne({ email }).then(user => {
+    //Check for user
+    if (!user) {
+      return res.status(404).json({ email: "User Not Found" });
+    }
+
+    //Check Password
+    bcrypt.compare(password, user.password).then(isMatch => {
+      if (isMatch) {
+        res.json({ msg: "Sucess" });
+      } else {
+        return res.status(400).json({ password: "password" });
+      }
+    });
+  });
+});
 
 module.exports = router;
