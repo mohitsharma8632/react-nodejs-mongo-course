@@ -63,11 +63,11 @@ router.post("/login", (req, res) => {
     }
 
     //Check Password
-    bcrypt.compare(password, user.password).then(isMatch => {
+    bcrypt.compare(password, user.password)
+    .then(isMatch => {
       if (isMatch) {
-        //User Matched
-
-        const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
+         //User Matched
+         const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
 
         //Sign Token
         jwt.sign(
@@ -76,14 +76,14 @@ router.post("/login", (req, res) => {
           { expiresIn: 3600 },
           (err, token) => {
             res.json({
-              success: true,
+              success: true, 
               token: "Bearer " + token
             });
           }
-        );
-      } else {
-        return res.status(400).json({ password: "password incorrect" });
-      }
+        ); 
+      }else{
+        return res.status(400).json({password: "Password Incorrect"});
+      } 
     });
   });
 });
