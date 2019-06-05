@@ -6,6 +6,10 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
 
+//load Input Validation
+const validRegisteredInput = require("../../validation/register");
+const validLoginInput = require("../../validation/login");
+
 //load User model
 const User = require("../../models/User");
 
@@ -17,10 +21,18 @@ router.get("/test", (req, res) => res.json({ msg: "User Works" }));
 // @route get api/users/reqister
 //@desc Register
 //@access Public
-router.post("/register", (req, res) =>
+router.post("/register", (req, res) => {
+  const { errors, isValid } = validRegisteredInput(req.body);
+
+  //check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
-      return res.status(400).json({ email: "Email already exist" });
+      errors.email = "Email already exist";
+      return res.status(400).json();
     } else {
       const avatar = gravatar.url(req.body.email, {
         s: "200", //Size
@@ -45,13 +57,20 @@ router.post("/register", (req, res) =>
         });
       });
     }
-  })
-);
+  });
+});
 
 // @route get api/users/login
 //@desc Login User / Returning jwtTocken
 //@access Public
 router.post("/login", (req, res) => {
+  const { errors, isValid } = validLoginInput(req.body);
+
+  //check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
@@ -59,15 +78,15 @@ router.post("/login", (req, res) => {
   User.findOne({ email }).then(user => {
     //Check for user
     if (!user) {
-      return res.status(404).json({ email: "User Not Found" });
+      errors.email = "User not found";
+      return res.status(404).json(errors);
     }
 
     //Check Password
-    bcrypt.compare(password, user.password)
-    .then(isMatch => {
+    bcrypt.compare(password, user.password).then(isMatch => {
       if (isMatch) {
-         //User Matched
-         const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
+        //User Matched
+        const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
 
         //Sign Token
         jwt.sign(
@@ -76,14 +95,15 @@ router.post("/login", (req, res) => {
           { expiresIn: 3600 },
           (err, token) => {
             res.json({
-              success: true, 
+              success: true,
               token: "Bearer " + token
             });
           }
-        ); 
-      }else{
-        return res.status(400).json({password: "Password Incorrect"});
-      } 
+        );
+      } else {
+        errors.password = "Password Incorrect";
+        return res.status(400).json(errors);
+      }
     });
   });
 });
