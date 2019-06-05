@@ -6,6 +6,9 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
 
+//load input validation
+const validateRegisterInput = require("../../validation/register");  
+
 //load User model
 const User = require("../../models/User");
 
@@ -18,6 +21,7 @@ router.get("/test", (req, res) => res.json({ msg: "User Works" }));
 //@desc Register
 //@access Public
 router.post("/register", (req, res) =>
+  const { errors , isValid} = validateRegisterInput
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ email: "Email already exist" });
@@ -63,11 +67,10 @@ router.post("/login", (req, res) => {
     }
 
     //Check Password
-    bcrypt.compare(password, user.password)
-    .then(isMatch => {
+    bcrypt.compare(password, user.password).then(isMatch => {
       if (isMatch) {
-         //User Matched
-         const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
+        //User Matched
+        const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
 
         //Sign Token
         jwt.sign(
@@ -76,14 +79,14 @@ router.post("/login", (req, res) => {
           { expiresIn: 3600 },
           (err, token) => {
             res.json({
-              success: true, 
+              success: true,
               token: "Bearer " + token
             });
           }
-        ); 
-      }else{
-        return res.status(400).json({password: "Password Incorrect"});
-      } 
+        );
+      } else {
+        return res.status(400).json({ password: "Password Incorrect" });
+      }
     });
   });
 });
@@ -95,7 +98,11 @@ router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    res.json({ msg: "Success" });
+    res.json({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email
+    });
   }
 );
 
