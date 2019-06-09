@@ -3,8 +3,13 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const passport = require("passport");
 
+//Load validation
+const validateProfileInput = require("../../validation/profile");
+const validateExperienceInput = require("../../validation/experience");
+const validateEducationInput = require("../../validation/education");
+
 //Load profile model
-const Profile = require("../../models/Profile");
+const profile = require("../../models/Profile");
 
 //Load user profile
 const User = require("../../models/User");
@@ -23,12 +28,11 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const errors = {};
-
     profile
-      .fineOne({ user: req.user.id })
+      .findOne({ user: req.user.id })
       .then(profile => {
         if (!profile) {
-          errors.noprofile = "There is no profile for this user";
+          errors.noprofile = "There is no profile";
           return res.status(404).json(errors);
         }
         res.json(profile);
@@ -36,6 +40,60 @@ router.get(
       .catch(err => res.status(404).json(err));
   }
 );
+
+// @route Get api/profile/all
+//@desc Get profile all
+//access public
+router.get("/all", (req, res) => {
+  const errors = {};
+  Profile.find()
+    .populate("user", ["name", "avatar"])
+    .then(profiles => {
+      if (!profiles) {
+        errors.noprofile = "There is no profile for this user";
+        return res.status(404).json(errors);
+      }
+
+      res.json(profiles);
+    })
+    .catch(err => res.status(404).json("There is no profile"));
+});
+
+// @route Get api/profile.handle/:handle
+//@desc Get profile with handle
+//@access public
+
+router.get("/handle/:handle", (req, res) => {
+  const errors = {};
+  Profile.findOne({ handle: req.params.handle })
+    .populate("user", ["name", "avatar"])
+    .then(profile => {
+      if (!profile) {
+        errors.noprofile = "There is no such user";
+        res, status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => res.status(404).json("There is no profile for this user"));
+});
+
+// @route Get api/profile/user/:user_id
+//@desc Get profiel with user_id
+//@access public
+
+router.get("/user/:user_id", (req, res) => {
+  const errors = {};
+  Profile.findOne({ user: req.params.user_id })
+    .populate("user", ["name", "avatar"])
+    .then(profile => {
+      if (!profile) {
+        errors.noprofile = "There is no such user";
+        res, status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => res.status(404).json("There is no profile for this user"));
+});
 
 // @route POST api/profile
 //@desc Create or edit user profile
@@ -48,7 +106,8 @@ router.post(
 
     //Check validation
     if (!isValid) {
-      // Return
+      // Return any errors with 400 status
+      return res.status(400).json(errors);
     }
 
     //Get fields
@@ -57,7 +116,8 @@ router.post(
     if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.company) profileFields.company = req.body.conpany;
     if (req.body.website) profileFields.website = req.body.website;
-    if (req.body.location) profileFields.location = req.body.location;
+    if (req.body.ffieldofstudy)
+      profileFields.ffieldofstudy = req.body.ffieldofstudy;
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.status) profileFields.status = req.body.status;
     if (req.body.githubusername)
@@ -97,6 +157,74 @@ router.post(
           new Profile(profileFields).save().then(profile => res.json(profile));
         });
       }
+    });
+  }
+);
+
+// @route Post api/profile/ecperience
+//@desc Add experience to profile
+//access Private
+router.post(
+  "/experience",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateExperienceInput(req.body);
+
+    //Check validation
+    if (!isValid) {
+      // Return any errors with 400 status
+      return res.status(400).json(errors);
+    }
+
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      const newEdu = {
+        degree: req.body.degree,
+        company: req.body.company,
+        ffieldofstudy: req.body.ffieldofstudy,
+        from: req.body.from,
+        to: req.body.to,
+        curret: req.body.curret,
+        description: req.body.description
+      };
+
+      //add to exprience array
+      profile.experience.unshift(newEdu);
+
+      profile.save().then(profile => res.json(profile));
+    });
+  }
+);
+
+// @route Post api/profile/education
+//@desc Add education to profile
+//access Private
+router.post(
+  "/education",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateEducationInput(req.body);
+
+    //Check validation
+    if (!isValid) {
+      // Return any errors with 400 status
+      return res.status(400).json(errors);
+    }
+
+    Profile.findOne({ user: req.user.id }).then(profile => {
+      const newEdu = {
+        school: req.body.school,
+        degree: req.body.degree,
+        fieldofstudy: req.body.fieldofstudy,
+        from: req.body.from,
+        to: req.body.to,
+        curret: req.body.curret,
+        description: req.body.description
+      };
+
+      //add to exprience array
+      profile.education.unshift(newEdu);
+
+      profile.save().then(profile => res.json(profile));
     });
   }
 );
