@@ -23,9 +23,8 @@ router.get("/test", (req, res) => res.json({ msg: "Post Works" }));
 router.get("/", (req, res) => {
   Post.find()
     .sort({ date: -1 })
-    .then(posts => res.json(posts))
-    .catch(err => res.status(404));
-  res.status(404).json({ nopostsfound: "No post found" });
+    .then(post => res.json(post))
+    .catch(err => res.status(404).json({ nopostsfound: "No post found" }));
 });
 
 // @route Post api/posts/:id
@@ -33,9 +32,10 @@ router.get("/", (req, res) => {
 //@access Public
 router.get("/:id", (req, res) => {
   Post.findById(req.params.id)
-    .then(post => res.json(posts))
-    .catch(err => res.status(404));
-  res.status(404).json({ nopostfound: "No post found with that ID" });
+    .then(post => res.json(post))
+    .catch(err =>
+      res.status(404).json({ nopostfound: "No post found with that ID" })
+    );
 });
 
 // @route Psot api/posts
@@ -118,7 +118,7 @@ router.post(
   }
 );
 
-// @route Post api/unlike/:id
+// @route Post api/posts/unlike/:id
 //@desc Unlike post
 //@access Private
 router.post(
@@ -150,6 +150,40 @@ router.post(
         })
         .catch(err => res.status(404).json({ postnotfound: "No post found" }));
     });
+  }
+);
+
+// @route Post api/post/comment/:id
+//@desc Add comment to a post
+//@access Private
+router.post(
+  "/comments/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validatePostInput(req.body);
+
+    //Check validation
+    if (!isValid) {
+      //If error send 400 wiith error object
+      return res.status(400).json(errors);
+    }
+
+    Post.findById(res.prams.id)
+      .then(post => {
+        const newComment = {
+          text: res.body.text,
+          name: req.body.name,
+          avatar: req.body.avatar,
+          user: req.user.id
+        };
+
+        //Add to comment array
+        post.comments.unshift(newComment);
+
+        //Save
+        post.save().then(post => res.json(post));
+      })
+      .catch(err => res.status(404).json({ postnotfound: "No post found" }));
   }
 );
 
