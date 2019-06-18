@@ -21,6 +21,8 @@
     "validator": "^11.0.0"
   },
   "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-plugin-node": "^9.1.0",
     "nodemon": "^1.19.1"
   }
 }

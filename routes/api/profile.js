@@ -9,7 +9,7 @@ const validateExperienceInput = require("../../validation/experience");
 const validateEducationInput = require("../../validation/education");
 
 //Load profile model
-const profile = require("../../models/Profile");
+const Profile = require("../../models/Profile");
 
 //Load user model
 const User = require("../../models/User");
@@ -28,8 +28,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const errors = {};
-    profile
-      .findOne({ user: req.user.id })
+    Profile.findOne({ user: req.user.id })
       .then(profile => {
         if (!profile) {
           errors.noprofile = "There is no profile";
@@ -70,7 +69,7 @@ router.get("/handle/:handle", (req, res) => {
     .then(profile => {
       if (!profile) {
         errors.noprofile = "There is no such user";
-        res, status(404).json(errors);
+        res.status(404).json(errors);
       }
       res.json(profile);
     })
@@ -88,7 +87,7 @@ router.get("/user/:user_id", (req, res) => {
     .then(profile => {
       if (!profile) {
         errors.noprofile = "There is no such user";
-        res, status(404).json(errors);
+        res.status(404).json(errors);
       }
       res.json(profile);
     })

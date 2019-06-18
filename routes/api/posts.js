@@ -100,8 +100,8 @@ router.post(
       Post.findById(req.params.id)
         .then(post => {
           if (
-            post.like.filter(like => like.usertoString() === req.user.id)
-              .lenght > 0
+            post.likes.filter(like => like.user.toString() === req.user.id)
+              .length > 0
           ) {
             return res
               .status(400)
@@ -109,7 +109,7 @@ router.post(
           }
 
           //Add the user id to likes array
-          post.like.unshift({ user: req.user.id });
+          post.likes.unshift({ user: req.user.id });
 
           post.save().then(post => res.json(post));
         })
@@ -129,7 +129,7 @@ router.post(
       Post.findById(req.params.id)
         .then(post => {
           if (
-            post.like.filter(like => like.usertoString() === req.user.id)
+            post.likes.filter(like => like.user.toString() === req.user.id)
               .lenght === 0
           ) {
             return res
@@ -199,7 +199,7 @@ router.delete(
         //Check if comment exist
         if (
           post.comments.filter(
-            Comment => comment_id.toString() === req.params.comment_id
+            comment => comment._id.toString() === req.params.comment_id
           ).lenght === 0
         ) {
           return res
