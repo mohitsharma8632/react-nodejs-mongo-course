@@ -21,7 +21,7 @@ module.exports = function validateProfileInput(data) {
   }
 
   if (validator.isEmpty(data.skills)) {
-    errors.skills = "Profile handle is required";
+    errors.skills = "Skills is required";
   }
 
   if (!isEmpty(data.website)) {
