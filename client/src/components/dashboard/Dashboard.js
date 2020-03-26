@@ -21,7 +21,13 @@ class Dashboard extends Component {
     } else {
       //Check if loged in user has profile data
       if (Object.keys(profile).length > 0) {
-        dashboardContent = <h4>TODO: Display Profile</h4>;
+        dashboardContent = (
+          <div>
+            <p className="lead text-muted">
+              Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
+            </p>
+          </div>
+        );
       } else {
         //User is loged in and has no profile
         dashboardContent = (
@@ -62,7 +68,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { getCurrentProfile }
-)(Dashboard);
+export default connect(mapStateToProps, { getCurrentProfile })(Dashboard);
