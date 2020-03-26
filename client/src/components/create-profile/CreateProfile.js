@@ -44,10 +44,10 @@ class CreateProfile extends Component {
 
     const profileData = {
       handle: this.state.handle,
-      Company: this.state.company,
+      company: this.state.company,
       website: this.state.website,
       location: this.state.location,
-      status: this.state.stutus,
+      status: this.state.status,
       skills: this.state.skills,
       githubusername: this.state.githubusername,
       bio: this.state.bio,
@@ -119,16 +119,16 @@ class CreateProfile extends Component {
 
     //Select options for status
     const options = [
-      { lable: "* Select professional Status", value: 0 },
-      { lable: "Developer", value: "Developer" },
-      { lable: "Junior Developer", value: "Junior Developer" },
-      { lable: "Senior Developer", value: "Senior Developer" },
-      { lable: "Doctor", value: "Doctor" },
-      { lable: "Manager", value: "Manager" },
-      { lable: "Student or Learning", value: "Student or Learning" },
-      { lable: "Instructor or Teacher", value: "Instructor or Teacher" },
-      { lable: "Intern", value: "Intern" },
-      { lable: "Other", value: "Other" }
+      { label: "* Select professional Status", value: 0 },
+      { label: "Developer", value: "Developer" },
+      { label: "Junior Developer", value: "Junior Developer" },
+      { label: "Senior Developer", value: "Senior Developer" },
+      { label: "Doctor", value: "Doctor" },
+      { label: "Manager", value: "Manager" },
+      { label: "Student or Learning", value: "Student or Learning" },
+      { label: "Instructor or Teacher", value: "Instructor or Teacher" },
+      { label: "Intern", value: "Intern" },
+      { label: "Other", value: "Other" }
     ];
 
     return (
@@ -189,10 +189,10 @@ class CreateProfile extends Component {
                   value={this.state.skills}
                   onChange={this.onChange}
                   error={errors.skills}
-                  info="Please use COMMA separated  value (eg. HTML,CSS,JavaScript,PHP"
+                  info="Please use COMMA separated  value (eg. HTML,CSS,JavaScript,PHP)"
                 />
                 <TextFieldGroup
-                  placeholder="Githud Username"
+                  placeholder="Github Username"
                   name="githubusername"
                   value={this.state.githubusername}
                   onChange={this.onChange}
@@ -210,7 +210,7 @@ class CreateProfile extends Component {
 
                 <div className="mb-3">
                   <button
-                    type="button"
+                    // type="button"
                     onClick={() => {
                       this.setState(prevState => ({
                         displaySocialInputs: !prevState.displaySocialInputs
