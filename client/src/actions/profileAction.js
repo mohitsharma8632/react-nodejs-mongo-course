@@ -13,18 +13,18 @@ export const getCurrentProfile = () => dispatch => {
   dispatch(setProfileLoading());
   axios
     .get("./api/profile")
-    .then(res =>
-      dispatch({
+    .then(res => {
+      return dispatch({
         type: GET_PROFILE,
         payload: res.data
-      })
-    )
-    .catch(
+      });
+    })
+    .catch(e => {
       dispatch({
         type: GET_PROFILE,
-        payload: {}
-      })
-    );
+        payload: null
+      });
+    });
 };
 
 // Create Profile
