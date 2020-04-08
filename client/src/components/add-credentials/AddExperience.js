@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
-import { TextFieldGroup } from "../common/TextFieldGroup";
-import { TextAreaFieldGroup } from "../common/TextAreaFieldGroup";
+import TextFieldGroup from "../common/TextFieldGroup";
+import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -19,10 +19,31 @@ class AddExperience extends Component {
       errors: {},
       disabled: false,
     };
+
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onCheck = this.onCheck.bind(this);
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    console.log("submit");
+  }
+
+  onChange(e) {
+    this.setState({ [e.target.name]: e.targetvalue });
+  }
+
+  onCheck(e) {
+    this.setState({
+      disabled: !this.state.disabled,
+      current: !this.state.current,
+    });
   }
 
   render() {
-    const { errors } = this.errors;
+    const { errors } = this.state;
 
     return (
       <div className="add-experience">
@@ -32,11 +53,75 @@ class AddExperience extends Component {
               <Link to="/dashboard" className="btn btn-light">
                 Go Back
               </Link>
-              <h1 className="display-4 text-center"> Add Ex</h1>
+              <h1 className="display-4 text-center"> Add Experience</h1>
               <p className="lead text-center">
                 Add any job or position that you have had in the past or current
               </p>
               <small className="d-block pd-3">* = required field</small>
+              <form onSubmit={this.onSubmit}>
+                <TextFieldGroup
+                  placeholder="* Company"
+                  name="company"
+                  value={this.state.company}
+                  error={errors.company}
+                />
+                <TextFieldGroup
+                  placeholder="* Job Title"
+                  name="title"
+                  value={this.state.title}
+                  error={errors.title}
+                />
+                <TextFieldGroup
+                  placeholder="* Location"
+                  name="location"
+                  value={this.state.location}
+                  error={errors.location}
+                />
+                <h6>From Date</h6>
+                <TextFieldGroup
+                  name="from"
+                  type="date"
+                  value={this.state.from}
+                  onChange={this.state.onChange}
+                  error={errors.from}
+                />
+                <h6>To Date</h6>
+                <TextFieldGroup
+                  name="to"
+                  type="date"
+                  value={this.state.to}
+                  onChange={this.state.onChange}
+                  error={errors.to}
+                  disabled={this.state.disabled ? "disabled" : ""}
+                />
+                <div className="form-check mb-4">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    name="current"
+                    value={this.state.current}
+                    checked={this.state.current}
+                    onChange={this.onCheck}
+                    id="current"
+                  />
+                  <lable htmlFor="current" className="form-check-lable">
+                    Current Job
+                  </lable>
+                </div>
+                <TextAreaFieldGroup
+                  placeholder="Job Description"
+                  name="descrription"
+                  value={this.state.description}
+                  onChange={this.onChange}
+                  error={errors.description}
+                  info="Tell us about the position"
+                />
+                <input
+                  type="submit"
+                  value="Submit"
+                  className="btn btn-info btn-block mt-4"
+                />
+              </form>
             </div>
           </div>
         </div>
