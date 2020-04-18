@@ -70,7 +70,7 @@ class AddEducation extends Component {
               <Link to="/dashboard" className="btn btn-light">
                 Go Back
               </Link>
-              <h1 className="display-4 text-center"> Add Aducation</h1>
+              <h1 className="display-4 text-center"> Add Education</h1>
               <p className="lead text-center">
                 Add any school, bootcamp, etc that you have attended
               </p>
@@ -80,18 +80,21 @@ class AddEducation extends Component {
                   placeholder="* School"
                   name="school"
                   value={this.state.school}
+                  onChange={this.onChange}
                   error={errors.school}
                 />
                 <TextFieldGroup
                   placeholder="* Degree or Certification"
                   name="degree"
                   value={this.state.degree}
+                  onChange={this.onChange}
                   error={errors.degree}
                 />
                 <TextFieldGroup
                   placeholder="* Field of Study"
                   name="fieldofstudy"
                   value={this.state.fieldofstudy}
+                  onChange={this.onChange}
                   error={errors.fieldofstudy}
                 />
                 <h6>From Date</h6>
@@ -99,7 +102,7 @@ class AddEducation extends Component {
                   name="from"
                   type="date"
                   value={this.state.from}
-                  onChange={this.state.onChange}
+                  onChange={this.onChange}
                   error={errors.from}
                 />
                 <h6>To Date</h6>
@@ -107,7 +110,7 @@ class AddEducation extends Component {
                   name="to"
                   type="date"
                   value={this.state.to}
-                  onChange={this.state.onChange}
+                  onChange={this.onChange}
                   error={errors.to}
                   disabled={this.state.disabled ? "disabled" : ""}
                 />
@@ -121,13 +124,13 @@ class AddEducation extends Component {
                     onChange={this.onCheck}
                     id="current"
                   />
-                  <lable htmlFor="current" className="form-check-lable">
+                  <label htmlFor="current" className="form-check-lable">
                     Current School
-                  </lable>
+                  </label>
                 </div>
                 <TextAreaFieldGroup
                   placeholder="Program Description"
-                  name="descrription"
+                  name="description"
                   value={this.state.description}
                   onChange={this.onChange}
                   error={errors.description}
