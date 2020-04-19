@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import TextFieldGroup from "../common/TextFieldGroup";
 import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
@@ -88,8 +88,8 @@ class CreateProfile extends Component {
         twitter: profile.twitter,
         facebook: profile.facebook,
         linkedin: profile.linkedin,
-        Youtube: profile.youtube,
-        Instagram: profile.instagram,
+        youtube: profile.youtube,
+        instagram: profile.instagram,
       });
     }
   }
@@ -109,8 +109,8 @@ class CreateProfile extends Component {
       twitter: this.state.twitter,
       facebook: this.state.facebook,
       linkedin: this.state.linkedin,
-      Youtube: this.state.youtube,
-      Instagram: this.state.instagram,
+      youtube: this.state.youtube,
+      instagram: this.state.instagram,
     };
 
     this.props.createProfile(profileData, this.props.history);
@@ -191,6 +191,9 @@ class CreateProfile extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
+              <Link to="/dashboard" className="btn btn-light">
+                Go Back
+              </Link>
               <h1 className="display-4 text-center">Edit Profile</h1>
               <small className="d-bloak pd-3">* = Required Feilds</small>
               <form onSubmit={this.onSubmit}>
@@ -262,7 +265,7 @@ class CreateProfile extends Component {
 
                 <div className="mb-3">
                   <button
-                    // type="button"
+                    type="button"
                     onClick={() => {
                       this.setState((prevState) => ({
                         displaySocialInputs: !prevState.displaySocialInputs,

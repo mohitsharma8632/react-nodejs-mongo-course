@@ -29,9 +29,10 @@ router.get(
   (req, res) => {
     const errors = {};
     Profile.findOne({ user: req.user.id })
+      .populate("user", ["name", "avatar"])
       .then((profile) => {
         if (!profile) {
-          errors.noprofile = "There is no profile";
+          errors.noprofile = "There is no profile for this user";
           return res.status(404).json(errors);
         }
         res.json(profile);
@@ -49,13 +50,13 @@ router.get("/all", (req, res) => {
     .populate("user", ["name", "avatar"])
     .then((profiles) => {
       if (!profiles) {
-        errors.noprofile = "There is no profile for this user";
+        errors.noprofile = "There is no profiles";
         return res.status(404).json(errors);
       }
 
       res.json(profiles);
     })
-    .catch((err) => res.status(404).json("There is no profile"));
+    .catch((err) => res.status(404).json("There is no profiles"));
 });
 
 // @route Get api/profile.handle/:handle
@@ -68,15 +69,15 @@ router.get("/handle/:handle", (req, res) => {
     .populate("user", ["name", "avatar"])
     .then((profile) => {
       if (!profile) {
-        errors.noprofile = "There is no such user";
+        errors.noprofile = "There is no profile for this user";
         res.status(404).json(errors);
       }
       res.json(profile);
     })
-    .catch((err) => res.status(404).json("There is no profile for this user"));
+    .catch((err) => res.status(404).json(err));
 });
 
-// @route Get api/profile/user/:user_id
+//@route Get api/profile/user/:user_id
 //@desc Get profiel with user_id
 //@access public
 
@@ -91,7 +92,9 @@ router.get("/user/:user_id", (req, res) => {
       }
       res.json(profile);
     })
-    .catch((err) => res.status(404).json("There is no profile for this user"));
+    .catch((err) =>
+      res.status(404).json({ profile: "There is no profile for this user" })
+    );
 });
 
 // @route POST api/profile
@@ -115,8 +118,6 @@ router.post(
     if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.company) profileFields.company = req.body.company;
     if (req.body.website) profileFields.website = req.body.website;
-    if (req.body.fieldofstudy)
-      profileFields.fieldofstudy = req.body.fieldofstudy;
     if (req.body.location) profileFields.location = req.body.location;
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.status) profileFields.status = req.body.status;
@@ -135,7 +136,10 @@ router.post(
     if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
     if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
+    //Create or Edit current user profile with unique handle
     Profile.findOne({ user: req.user.id }).then((profile) => {
+      //If user not exist,then create new one, Otherwise just update
+
       if (profile) {
         // Update
         Profile.findOneAndUpdate(
@@ -243,7 +247,7 @@ router.delete(
         //Get remove index
         const removeIndex = profile.experience
           .map((item) => item.id)
-          .indexOf(req.prams.exp_id);
+          .indexOf(req.params.exp_id);
 
         //splice out of array
         profile.experience.splice(removeIndex, 1);
@@ -267,7 +271,7 @@ router.delete(
         //Get remove index
         const removeIndex = profile.education
           .map((item) => item.id)
-          .indexOf(req.prams.edu_id);
+          .indexOf(req.params.edu_id);
 
         //splice out of array
         profile.education.splice(removeIndex, 1);
