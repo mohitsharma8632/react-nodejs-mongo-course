@@ -16,7 +16,7 @@ class CreateProfile extends Component {
       handle: "",
       company: "",
       website: "",
-      location: {},
+      location: "",
       status: "",
       skills: "",
       githubusername: "",
